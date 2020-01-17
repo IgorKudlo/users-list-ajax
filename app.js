@@ -1,5 +1,8 @@
 const nameContainer = document.querySelector('.list-group');
 const modalBody = document.querySelector('#modal-user-info .modal-body');
+const formNewUser = document.querySelector('.form-new-user');
+const newUserFields = document.querySelectorAll('.form-new-user .form-control');
+const btnCreateUser = document.querySelector('.btn-create-user');
 let users;
 
 xhrRequest(generateUserName);
@@ -18,6 +21,20 @@ function xhrRequest(cbResponse) {
     xhr.send();
 }
 
+function xhrRequestPost(body, cbResponse) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://jsonplaceholder.typicode.com/users');
+
+    xhr.addEventListener('load', (e) => {
+        const response = JSON.parse(xhr.responseText);
+        cbResponse(response);
+    });
+
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+
+    xhr.send(JSON.stringify(body));
+}
+
 function generateUserName(arr) {
     arr.forEach((user) => {
         const li = document.createElement('li');
@@ -27,6 +44,16 @@ function generateUserName(arr) {
         li.dataset.target = '#modal-user-info';
         nameContainer.append(li);
     });
+}
+
+function viewNewUser(...objNewUser) {
+    document.querySelector('body').classList.remove('modal-open');
+    document.querySelector('#modal-create-user').classList.remove('show');
+    document.querySelector('.modal-backdrop').remove();
+    newUserFields.forEach((item) => {
+        item.value = '';
+    });
+    generateUserName(objNewUser);
 }
 
 function listGroupHandler(e) {
@@ -56,3 +83,12 @@ function generateAllInfo(obj, parent) {
         }
     });
 }
+
+formNewUser.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newUser = {};
+    newUserFields.forEach((item) => {
+        newUser[item.name] = item.value;
+    });
+    xhrRequestPost(newUser, viewNewUser);
+});
