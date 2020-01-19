@@ -91,4 +91,5 @@ formNewUser.addEventListener('submit', (e) => {
         newUser[item.name] = item.value;
     });
     xhrRequestPost(newUser, viewNewUser);
+    users.push(newUser);
 });
